@@ -102,6 +102,10 @@ class SwiperViewModel: ObservableObject  {
             let newIndex = data.count + currentIndex
             primaryOffet = -offsetForItem(newIndex)
         }
+        
+        if options.autoPlay {
+            enableAutoPlay()
+        }
     }
     
 }
@@ -109,7 +113,9 @@ class SwiperViewModel: ObservableObject  {
 /// Size
 extension SwiperViewModel {
     func widthPerElement() -> CGFloat {
-        return canvasSize / options.slidesPerView
+        let _width = canvasSize / options.slidesPerView
+        let _spaces = (options.slidesPerView - 1) * options.spacing
+        return _width - _spaces / options.slidesPerView
     }
     
     func totalWidthElement() -> CGFloat {
@@ -134,6 +140,11 @@ extension SwiperViewModel {
         activeOffset = x
         cloneNext()
         clonePrev(step: 1)
+        
+        if options.autoPlay {
+            disableAutoPlay()
+        }
+        
     }
     
     func afterDrag() -> Void {
@@ -152,6 +163,10 @@ extension SwiperViewModel {
                 // Các trường hợp còn lại => cuộn về index gần nhất
                 toIndex(currentIndex)
             }
+        }
+        
+        if options.autoPlay {
+            enableAutoPlay()
         }
     }
     
@@ -212,11 +227,16 @@ extension SwiperViewModel {
 
 // AutoPlay
 extension SwiperViewModel {
-    func setAutoPlay() -> Void {
-            debounceNext?.invalidate()
-            debounceNext = nil
-            debounceNext = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) {  _ in
+    func enableAutoPlay() -> Void {
+        disableAutoPlay()
+        debounceNext = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self]  _ in
+            self?.toNext()
         }
+    }
+    
+    func disableAutoPlay() -> Void {
+        debounceNext?.invalidate()
+        debounceNext = nil
     }
 }
 
@@ -244,7 +264,7 @@ struct Sho2_Previews: PreviewProvider {
             
             Swiper(
                 [.blue, .gray, .orange, .yellow],
-                options: SwiperOptions(spacing: 10, slidesPerView: 1.5, loop: true)
+                options: SwiperOptions(spacing: 10, slidesPerView: 2, autoPlay: true, loop: true)
             )
             .padding(.horizontal)
             // .frame(height: 250)
