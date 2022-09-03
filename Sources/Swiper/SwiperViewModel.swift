@@ -9,15 +9,18 @@ import SwiftUI
 
 class SwiperViewModel: ObservableObject  {
     @Published
-    var data: [Color]
+    var items: [Color]
     
     @Published
-    var nextData: [Color] = []
+    var data: [SlideItem] = []
     
     @Published
-    var prevData: [Color] = []
+    var nextData: [SlideItem] = []
     
-    var resource: [Color] {
+    @Published
+    var prevData: [SlideItem] = []
+    
+    var resource: [SlideItem] {
         get {
             if options.loop {
                 return prevData + data + nextData
@@ -38,7 +41,7 @@ class SwiperViewModel: ObservableObject  {
                 return .zero
             }
             
-            return totalWidthElement() + totalSpaces()
+            return totalWidthElement() + totalSpacing()
         }
     }
     
@@ -46,7 +49,7 @@ class SwiperViewModel: ObservableObject  {
     /// Bằng tổng viewSize - 1 canvasSize
     var enableSize: CGFloat {
         get {
-            return viewSize - canvasSize
+            return viewSize - widthPerSlide()
         }
     }
     
@@ -69,7 +72,7 @@ class SwiperViewModel: ObservableObject  {
     var currentIndex: Int {
         get {
             
-            if widthPerElement() == .zero {
+            if widthPerSlide() == .zero {
                 return 0
             }
             
@@ -79,7 +82,7 @@ class SwiperViewModel: ObservableObject  {
                 return resource.count
             } else {
                 /// Mỗi element sẽ đi kèm với một padding, ngoại trừ element đầu tiên
-                let ratio = abs((offset - options.spacing) / (widthPerElement() + options.spacing))
+                let ratio = abs((offset - options.spaceBetween) / (widthPerSlide() + options.spaceBetween))
                 return Int(round(ratio))
             }
         }
@@ -92,15 +95,17 @@ class SwiperViewModel: ObservableObject  {
     var debounceNext:Timer?
     
     init(_ data: [Color], options: SwiperOptions) {
-        self.data = data
+        self.items = data
         self.options = options
     }
     
     func setup() -> Void {
+        data = cloneData()
+        
         if options.loop {
             prevData.append(contentsOf: data)
             let newIndex = data.count + currentIndex
-            primaryOffet = -offsetForItem(newIndex)
+            primaryOffet = -offsetForSlide(newIndex)
         }
         
         if options.autoPlay {
@@ -108,159 +113,6 @@ class SwiperViewModel: ObservableObject  {
         }
     }
     
-}
-
-/// Size
-extension SwiperViewModel {
-    func widthPerElement() -> CGFloat {
-        let _width = canvasSize / options.slidesPerView
-        let _spaces = (options.slidesPerView - 1) * options.spacing
-        return _width - _spaces / options.slidesPerView
-    }
-    
-    func totalWidthElement() -> CGFloat {
-        return CGFloat(resource.count) * widthPerElement()
-    }
-    
-    func totalSpaces() -> CGFloat {
-        return CGFloat(resource.count - 1) * options.spacing
-    }
-    
-    func offsetForItem(_ index: Int) -> CGFloat {
-        let _index = CGFloat(index)
-        let tranfromX = widthPerElement() * _index
-        let tranformSpace = (_index) * options.spacing
-        return tranfromX + tranformSpace
-    }
-}
-
-// Navigation
-extension SwiperViewModel {
-    func onDrag(x: CGFloat) -> Void {
-        
-        // if options.bounce {
-            activeOffset = x
-//        } else {
-//            //
-//        }
-        
-        cloneNext()
-        clonePrev(step: 1)
-        
-        if options.autoPlay {
-            disableAutoPlay()
-        }
-        
-    }
-    
-    func afterDrag() -> Void {
-        primaryOffet += activeOffset
-        activeOffset = .zero
-        
-        if options.loop {
-            toIndex(currentIndex)
-        } else {
-            // Kéo cuộn về phía leading
-            if offset > 0 {
-                toOffset(.zero)
-            } else if offset < -enableSize {
-                toOffset(-enableSize)
-            } else {
-                // Các trường hợp còn lại => cuộn về index gần nhất
-                toIndex(currentIndex)
-            }
-        }
-        
-        if options.autoPlay {
-            enableAutoPlay()
-        }
-    }
-    
-    func toOffset(_ to: CGFloat) {
-        withAnimation {
-            primaryOffet = to
-        }
-    }
-    
-    func toIndex(_ to: Int) -> Void {
-        toOffset(-offsetForItem(to))
-    }
-    
-    func cloneNext() -> Void {
-        if options.loop {
-            if (currentIndex + 1) + data.count >= resource.count - 1 {
-                nextData.append(contentsOf: data)
-            }
-            
-        }
-    }
-    
-    /// Tiến tới slide tiếp theo
-    func toNext() -> Void {
-        // Nếu Clone => cloneNext
-        cloneNext()
-        
-        // Nằm trong khoảng có thể next
-        if currentIndex < resource.count - 1 {
-            return toIndex(currentIndex + 1)
-        } else {
-            toIndex(0)
-        }
-    }
-    
-    func clonePrev(step: Int = 0) {
-        // Clone => push to clonePrev
-        if options.loop {
-            if currentIndex == data.count - 1 {
-                prevData.append(contentsOf: data)
-                
-                // khi append => làm thay đổi currentIndex => toIndex sẽ bị sai
-                // Thay đổi offset mà ko dùng animation
-                let newIndex = data.count + currentIndex
-                primaryOffet = -offsetForItem(newIndex + step)
-            }
-        }
-    }
-    
-    func toPrev() -> Void {
-        
-        // Kiểm tra và clone Prev
-        clonePrev()
-
-        if currentIndex > 0 {
-            return toIndex(currentIndex - 1)
-        }
-    }
-}
-
-// AutoPlay
-extension SwiperViewModel {
-    func enableAutoPlay() -> Void {
-        disableAutoPlay()
-        debounceNext = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self]  _ in
-            self?.toNext()
-        }
-    }
-    
-    func disableAutoPlay() -> Void {
-        debounceNext?.invalidate()
-        debounceNext = nil
-    }
-}
-
-struct SwiperOptions {
-    // Khoảng cách giữa các element
-    var spacing: CGFloat = .zero
-    // Số slide/màn hình
-    var slidesPerView: CGFloat = 1
-    
-    // Tự động play
-    var autoPlay: Bool = false
-    // Tự động clone. Infinity
-    var loop: Bool = false
-    
-    // Slide bắt đầu
-    var initIndex: Int = 0
 }
 
 struct Sho2_Previews: PreviewProvider {
@@ -269,7 +121,7 @@ struct Sho2_Previews: PreviewProvider {
             
             Swiper(
                 [.blue, .gray, .orange, .yellow],
-                options: SwiperOptions(spacing: 10, slidesPerView: 2.5, autoPlay: false, loop: true)
+                options: SwiperOptions(spaceBetween: 10, slidesPerView: 1)
             )
             .padding(.horizontal)
             // .frame(height: 250)

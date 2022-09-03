@@ -40,7 +40,7 @@ struct Swiper: View {
                         }
                         
                         Button {
-                            viewModel.toNext()
+                            viewModel.slideNext()
                         } label: {
                             Text("Next")
                                 .foregroundColor(.white)
@@ -57,8 +57,8 @@ struct Swiper: View {
                         Text("Primary Offset: \(viewModel.primaryOffet)")
                         Text("Darg: \(viewModel.activeOffset)")
                         Text("Canvas Size: \(viewModel.canvasSize)")
-                        Text("Width Element: \(viewModel.widthPerElement())")
-                        Text("Padding: \(viewModel.totalSpaces())")
+                        Text("Width Element: \(viewModel.widthPerSlide())")
+                        Text("Padding: \(viewModel.totalSpacing())")
                         Text("Init Count: \(viewModel.data.count)")
                         Text("Deep Count: \(viewModel.resource.count)")
                         Text("View Size: \(viewModel.viewSize)")
@@ -76,21 +76,15 @@ struct Swiper: View {
                     ZStack(alignment: .topLeading) {
                         // Primary
                         ForEach(Array(zip(viewModel.resource.indices, viewModel.resource)), id: \.0) { index, item in
-                          
-                            item
+                            
+                            item.item
                                 .overlay(
                                     VStack {
-                                        
-                                        Text("Offset: \(viewModel.offsetForItem(index))")
-                                        
-                                        Text("Index: \(index)")
-                                        
-                                        Text(viewModel.currentIndex == index ? "Active" : "")
-                                        
+                                        Text("Offset: \(viewModel.offsetForSlide(index))")
                                     }
                                 )
-                                .frame(width: viewModel.widthPerElement())
-                                .offset(x: viewModel.offsetForItem(index))
+                                .frame(width: viewModel.widthPerSlide())
+                                .offset(x: viewModel.offsetForSlide(index))
                             
                         }
                     }
@@ -142,7 +136,7 @@ struct Sho_Previews: PreviewProvider {
             
             Swiper(
                 [.blue, .gray, .orange, .green],
-                options: SwiperOptions(spacing: 10, slidesPerView: 1.5, loop: true)
+                options: SwiperOptions(spaceBetween: 10, slidesPerView: 1.5)
             )
             .padding(.horizontal)
             // .frame(height: 250)
