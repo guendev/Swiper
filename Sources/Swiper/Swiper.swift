@@ -16,6 +16,9 @@ struct Swiper<Data, Content> : View where Data : RandomAccessCollection, Content
     var viewModel: SwiperViewModel<Data>
     private let content: (SwiperElement, SwiperItemResource, Dragging) -> Content
     
+    /// optional slot
+    // private let action: (() -> Content)?
+    
     @GestureState
     var isDragging = false
     var body: some View {
@@ -90,6 +93,7 @@ extension Swiper {
     init(
         _ data: Data,
         options: SwiperOptions = SwiperOptions(),
+        // @ViewBuilder action: @escaping () -> Content = nil,
         @ViewBuilder content: @escaping (SwiperElement, SwiperItemResource, Dragging) -> Content
     ) {
         self.viewModel = SwiperViewModel(data, options: options)
