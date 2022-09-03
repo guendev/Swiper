@@ -13,12 +13,15 @@ class SwiperViewModel: ObservableObject  {
     var data: [Color]
     
     @Published
-    var cloneData: [Color] = []
+    var cloneNext: [Color] = []
+    
+    @Published
+    var clonePrev: [Color] = []
     
     var resource: [Color] {
         get {
             if options.loop {
-                return data + cloneData
+                return clonePrev + data + cloneNext
             }
             return data
         }
@@ -76,8 +79,9 @@ class SwiperViewModel: ObservableObject  {
             } else if offset < -viewSize {
                 return resource.count
             } else {
-                let ratio = abs(offset / widthPerElement())
-                return Int(ratio)
+                // Sai do chứa padding
+                let ratio = abs((offset - options.spacing) / (widthPerElement() + options.spacing))
+                return Int(round(ratio))
             }
         }
     }
@@ -152,23 +156,42 @@ extension SwiperViewModel {
     }
     
     /// Tiến tới slide tiếp theo
-    // Nếu offset < enableSize => true/false
-    // true =>
     func toNext() -> Void {
+        // Nếu Clone => cloneNext
+        if options.loop {
+            if (currentIndex + 1) + data.count > resource.count {
+                cloneNext.append(contentsOf: data)
+            }
+            
+        }
         
+        // Nằm trong khoảng có thể next
+        if currentIndex < resource.count - 1 {
+            return toIndex(currentIndex + 1)
+        }
     }
     
     func toPrev() -> Void {
         
+        // Clone > reverse => push to clonePrev
+//        if options.loop {
+//            if currentIndex < resource.count {
+//                clonePrev.append(contentsOf: data.reversed())
+//            }
+//        }
+//
+        if currentIndex > 0 {
+            return toIndex(currentIndex - 2)
+        }
     }
 }
 
 // AutoPlay
 extension SwiperViewModel {
     func setAutoPlay() -> Void {
-        debounceNext?.invalidate()
-        debounceNext = nil
-        debounceNext = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) {  _ in
+            debounceNext?.invalidate()
+            debounceNext = nil
+            debounceNext = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) {  _ in
         }
     }
 }
@@ -196,8 +219,8 @@ struct Sho2_Previews: PreviewProvider {
         VStack {
             
             Swiper(
-                [.blue, .gray, .orange, .green, .yellow],
-                options: SwiperOptions(spacing: 20, slidesPerView: 1.5, loop: true)
+                [.blue, .gray, .orange, .blue, .gray, .orange],
+                options: SwiperOptions(spacing: 10, slidesPerView: 1.5, loop: true)
             )
             .padding(.horizontal)
             // .frame(height: 250)

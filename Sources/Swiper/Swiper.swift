@@ -70,6 +70,8 @@ struct Swiper: View {
                     Text("Offset: \(viewModel.offset)")
                     Text("Canvas Size: \(viewModel.canvasSize)")
                     Text("Width Element: \(viewModel.widthPerElement())")
+                    Text("Padding: \(viewModel.totalSpaces())")
+                    Text("Count Elements: \(viewModel.resource.count)")
                     Text("View Size: \(viewModel.viewSize)")
                     Text("Enable Size: \(viewModel.enableSize)")
                     Text("Current Index: \(viewModel.currentIndex)")
