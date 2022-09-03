@@ -12,6 +12,7 @@ struct SwiperOptions {
         initialSlide: Int = 0,
         spaceBetween: CGFloat = .zero,
         slidesPerView: CGFloat = 1,
+        alignment: Alignment = .leading,
         loop: Bool = false, autoPlay: Bool = false, speed: CGFloat = 3, delay: CGFloat = 5, fitSize: Bool = false, paginate: SwiperPaginate = .hidden) {
             
             // validate
@@ -30,6 +31,7 @@ struct SwiperOptions {
             self.initialSlide = initialSlide
             self.spaceBetween = spaceBetween
             self.slidesPerView = slidesPerView
+            self.alignment = alignment
             self.loop = loop
             self.autoPlay = autoPlay
             self.speed = speed
@@ -45,6 +47,9 @@ struct SwiperOptions {
     var spaceBetween: CGFloat = .zero
     // Số slide/màn hình
     var slidesPerView: CGFloat = 1
+    
+    // Căn các items
+    var alignment: Alignment = .leading
     
     // Tự động clone. Infinity
     var loop: Bool = false
@@ -68,11 +73,17 @@ enum SwiperPaginate {
     case line
 }
 
-struct SlideItem: Identifiable {
+struct SlideItem<Data>: Identifiable where Data: RandomAccessCollection {
     var id = UUID().uuidString
     var primaryID: Int
     
-    var item: Color
+    var item: Data.Element
     
     var active: Bool = false
+}
+
+struct SwiperItemResource {
+    let index: Int
+    let active: Bool
+    let offset: CGFloat
 }

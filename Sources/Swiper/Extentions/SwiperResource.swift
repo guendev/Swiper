@@ -10,7 +10,7 @@ import SwiftUI
 // Resource
 extension SwiperViewModel {
     
-    func cloneData() -> [SlideItem] {
+    func cloneData() -> [Item] {
         return items.enumerated().map({ _item in
             return SlideItem(primaryID: _item.offset, item: _item.element)
         })

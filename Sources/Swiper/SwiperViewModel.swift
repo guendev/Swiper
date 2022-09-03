@@ -7,20 +7,22 @@
 
 import SwiftUI
 
-class SwiperViewModel: ObservableObject  {
-    @Published
-    var items: [Color]
+class SwiperViewModel<Data>: ObservableObject where Data: RandomAccessCollection {
+    typealias Item = SlideItem<Data>
     
     @Published
-    var data: [SlideItem] = []
+    var items: Data
     
     @Published
-    var nextData: [SlideItem] = []
+    var data: [Item] = []
     
     @Published
-    var prevData: [SlideItem] = []
+    var nextData: [Item] = []
     
-    var resource: [SlideItem] {
+    @Published
+    var prevData: [Item] = []
+    
+    var resource: [Item] {
         get {
             if options.loop {
                 return prevData + data + nextData
@@ -94,7 +96,7 @@ class SwiperViewModel: ObservableObject  {
     // Auto Play
     var debounceNext:Timer?
     
-    init(_ data: [Color], options: SwiperOptions) {
+    init(_ data: Data, options: SwiperOptions) {
         self.items = data
         self.options = options
     }
@@ -117,21 +119,3 @@ class SwiperViewModel: ObservableObject  {
     }
     
 }
-
-struct Sho2_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            
-            Swiper(
-                [.blue, .gray, .orange],
-                options: SwiperOptions(spaceBetween: 10, slidesPerView: 4)
-            )
-            .padding(.horizontal)
-            // .frame(height: 250)
-            
-        }
-        .frame(maxHeight: .infinity)
-        .background(Color.gray.opacity(0.1).ignoresSafeArea())
-    }
-}
-

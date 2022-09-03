@@ -106,24 +106,3 @@ extension SwiperViewModel {
     }
 }
 
-struct Sho3_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            
-            Swiper(
-                [],
-                options: SwiperOptions(
-                    spaceBetween: 10,
-                    slidesPerView: 1.5,
-                    fitSize: true
-                )
-            )
-            .padding(.horizontal)
-            // .frame(height: 250)
-            
-        }
-        .frame(maxHeight: .infinity)
-        .background(Color.gray.opacity(0.1).ignoresSafeArea())
-    }
-}
-

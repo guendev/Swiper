@@ -45,25 +45,3 @@ extension SwiperViewModel {
         return tranfromX + tranformSpace
     }
 }
-
-struct Sho6_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            
-            Swiper(
-                [],
-                options: SwiperOptions(
-                    spaceBetween: 10,
-                    slidesPerView: 3.5,
-                    fitSize: true
-                )
-            )
-            .padding(.horizontal)
-            // .frame(height: 250)
-            
-        }
-        .frame(maxHeight: .infinity)
-        .background(Color.gray.opacity(0.1).ignoresSafeArea())
-    }
-}
-
