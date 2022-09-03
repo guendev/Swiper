@@ -8,6 +8,36 @@
 import SwiftUI
 
 struct SwiperOptions {
+    internal init(
+        initialSlide: Int = 0,
+        spaceBetween: CGFloat = .zero,
+        slidesPerView: CGFloat = 1,
+        loop: Bool = false, autoPlay: Bool = false, speed: CGFloat = 3, delay: CGFloat = 5, fitSize: Bool = false, paginate: SwiperPaginate = .hidden) {
+            
+            // validate
+            guard slidesPerView > 0 else {
+                fatalError("Property slidesPerView should be more than 0")
+            }
+            
+            guard speed > 0 else {
+                fatalError("Property more should be more than 0")
+            }
+            
+            guard delay > 0 else {
+                fatalError("Property deplay should be more than 0")
+            }
+            
+            self.initialSlide = initialSlide
+            self.spaceBetween = spaceBetween
+            self.slidesPerView = slidesPerView
+            self.loop = loop
+            self.autoPlay = autoPlay
+            self.speed = speed
+            self.delay = delay
+            self.fitSize = fitSize
+            self.paginate = paginate
+        }
+    
     // Index number of initial slide
     var initialSlide: Int = 0
     
@@ -27,7 +57,7 @@ struct SwiperOptions {
     var delay: CGFloat = 5
     
     // Tự động loại trừ khoảng trắng dư thừa
-    var fitSize: Bool = true
+    var fitSize: Bool = false
     
     var paginate: SwiperPaginate = .hidden
 }

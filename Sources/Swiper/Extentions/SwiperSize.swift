@@ -9,20 +9,35 @@ import SwiftUI
 
 /// Size
 extension SwiperViewModel {
+    
+    func setFitSize() -> Void {
+        if options.fitSize {
+            
+            if CGFloat(data.count) < options.slidesPerView {
+                options.slidesPerView = CGFloat(data.count)
+            }
+            
+        }
+    }
+    
+    /// Độ rộng của mỗi slide
     func widthPerSlide() -> CGFloat {
         let _width = canvasSize / options.slidesPerView
         let _spaces = (options.slidesPerView - 1) * options.spaceBetween
         return _width - _spaces / options.slidesPerView
     }
     
+    // Tổng độ rộng của tất cả slide
     func totalWidthElement() -> CGFloat {
         return CGFloat(resource.count) * widthPerSlide()
     }
     
+    // Tổng khoảng cách
     func totalSpacing() -> CGFloat {
         return CGFloat(resource.count - 1) * options.spaceBetween
     }
     
+    // Offset cho ZStack
     func offsetForSlide(_ index: Int) -> CGFloat {
         let _index = CGFloat(index)
         let tranfromX = widthPerSlide() * _index
@@ -36,8 +51,12 @@ struct Sho6_Previews: PreviewProvider {
         VStack {
             
             Swiper(
-                [.blue, .gray, .orange, .yellow],
-                options: SwiperOptions(spaceBetween: 10, slidesPerView: 1)
+                [.blue, .gray, .orange],
+                options: SwiperOptions(
+                    spaceBetween: 10,
+                    slidesPerView: 2.5,
+                    fitSize: true
+                )
             )
             .padding(.horizontal)
             // .frame(height: 250)

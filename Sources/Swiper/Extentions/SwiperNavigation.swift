@@ -95,11 +95,10 @@ struct Sho3_Previews: PreviewProvider {
         VStack {
             
             Swiper(
-                [.blue, .gray, .orange, .yellow],
+                [.blue, .gray, .orange],
                 options: SwiperOptions(
                     spaceBetween: 10,
-                    slidesPerView: 1.5,
-                    loop: true
+                    slidesPerView: 3.5
                 )
             )
             .padding(.horizontal)

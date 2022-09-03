@@ -99,8 +99,11 @@ class SwiperViewModel: ObservableObject  {
         self.options = options
     }
     
+    /// Setup after render container
     func setup() -> Void {
         data = cloneData()
+        
+        setFitSize()
         
         if options.loop {
             prevData.append(contentsOf: data)
@@ -120,8 +123,8 @@ struct Sho2_Previews: PreviewProvider {
         VStack {
             
             Swiper(
-                [.blue, .gray, .orange, .yellow],
-                options: SwiperOptions(spaceBetween: 10, slidesPerView: 1)
+                [.blue, .gray, .orange],
+                options: SwiperOptions(spaceBetween: 10, slidesPerView: 4)
             )
             .padding(.horizontal)
             // .frame(height: 250)
