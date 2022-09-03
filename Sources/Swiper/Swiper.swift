@@ -82,7 +82,7 @@ struct Swiper: View {
                 /// Cards
                 ZStack(alignment: .topLeading) {
                     
-                    ForEach(Array(zip(viewModel.data.indices, viewModel.data)), id: \.0) { index, item in
+                    ForEach(Array(zip(viewModel.resource.indices, viewModel.resource)), id: \.0) { index, item in
                       
                         item
                             .overlay(

@@ -74,7 +74,7 @@ class SwiperViewModel: ObservableObject  {
             if offset > 0 {
                 return 0
             } else if offset < -viewSize {
-                return data.count
+                return resource.count
             } else {
                 let ratio = abs(offset / widthPerElement())
                 return Int(ratio)
@@ -102,11 +102,11 @@ extension SwiperViewModel {
     }
     
     func totalWidthElement() -> CGFloat {
-        return CGFloat(data.count) * widthPerElement()
+        return CGFloat(resource.count) * widthPerElement()
     }
     
     func totalSpaces() -> CGFloat {
-        return CGFloat(data.count - 1) * options.spacing
+        return CGFloat(resource.count - 1) * options.spacing
     }
     
     func offsetForItem(_ index: Int) -> CGFloat {
