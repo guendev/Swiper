@@ -61,6 +61,11 @@ extension SwiperViewModel {
     
     /// Tiến tới slide tiếp theo
     func slideNext() -> Void {
+        
+        guard !resource.isEmpty else {
+            return
+        }
+        
         // Nếu Clone => cloneNext
         _ = nextClone()
         
@@ -73,6 +78,10 @@ extension SwiperViewModel {
     }
     
     func toPrev() -> Void {
+        
+        guard !resource.isEmpty else {
+            return
+        }
         
         // Kiểm tra và clone Prev
         let hasPrevClone = prevClone()
@@ -95,10 +104,11 @@ struct Sho3_Previews: PreviewProvider {
         VStack {
             
             Swiper(
-                [.blue, .gray, .orange],
+                [.yellow, .blue, .red, .green],
                 options: SwiperOptions(
                     spaceBetween: 10,
-                    slidesPerView: 3.5
+                    slidesPerView: 1.5,
+                    fitSize: true
                 )
             )
             .padding(.horizontal)

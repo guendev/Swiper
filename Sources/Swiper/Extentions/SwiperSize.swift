@@ -51,10 +51,10 @@ struct Sho6_Previews: PreviewProvider {
         VStack {
             
             Swiper(
-                [.blue, .gray, .orange],
+                [],
                 options: SwiperOptions(
                     spaceBetween: 10,
-                    slidesPerView: 2.5,
+                    slidesPerView: 3.5,
                     fitSize: true
                 )
             )
