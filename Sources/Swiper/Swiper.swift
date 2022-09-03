@@ -17,10 +17,6 @@ struct Swiper: View {
     }
     @GestureState
     var isDragging = false
-    
-    @State
-    var logs: [String] = []
-
     var body: some View {
         
         /// Canvas
@@ -53,17 +49,6 @@ struct Swiper: View {
                                 .background(Color.purple)
                                 .cornerRadius(10)
                         }
-                        
-                        Button {
-                            logs = []
-                        } label: {
-                            Text("Clean")
-                                .foregroundColor(.white)
-                                .padding(.horizontal)
-                                .padding(.vertical, 5)
-                                .background(Color.blue)
-                                .cornerRadius(10)
-                        }
                     }
                     
                     Group {
@@ -85,53 +70,48 @@ struct Swiper: View {
 
                    
                 /// Cards
-                ZStack(alignment: .topLeading) {
-                    // Primary
-                    ForEach(Array(zip(viewModel.resource.indices, viewModel.resource)), id: \.0) { index, item in
-                      
-                        item
-                            .overlay(
-                                VStack {
-                                    
-                                    Text("Offset: \(viewModel.offsetForItem(index))")
-                                    
-                                    Text("Index: \(index)")
-                                    
-                                    Text(viewModel.currentIndex == index ? "Active" : "")
-                                    
-                                }
-                            )
-                            .frame(width: viewModel.widthPerElement())
-                            .offset(x: viewModel.offsetForItem(index))
-                        
-                    }
-                }
-                .frame(height: 200)
-                .frame(width: viewModel.canvasSize, alignment: .leading)
-                .offset(x: viewModel.offset)
-                .background(Color.gray.opacity(0.1))
-                .gesture(
-                    DragGesture(minimumDistance: 10, coordinateSpace: .global)
-                        .onChanged({ value in
-                            viewModel.onDrag(x: value.translation.width)
-                        })
-                        .updating($isDragging, body: { (value, state, trans) in
-                            state = true
-                        })
-                        .onEnded({ value in
+                if viewModel.canvasSize > 0 {
+                    ZStack(alignment: .topLeading) {
+                        // Primary
+                        ForEach(Array(zip(viewModel.resource.indices, viewModel.resource)), id: \.0) { index, item in
+                          
+                            item
+                                .overlay(
+                                    VStack {
+                                        
+                                        Text("Offset: \(viewModel.offsetForItem(index))")
+                                        
+                                        Text("Index: \(index)")
+                                        
+                                        Text(viewModel.currentIndex == index ? "Active" : "")
+                                        
+                                    }
+                                )
+                                .frame(width: viewModel.widthPerElement())
+                                .offset(x: viewModel.offsetForItem(index))
                             
-                            viewModel.afterDrag()
-                        })
-                )
-                
-                VStack {
-                    
-                    ForEach(Array(zip(logs.indices, logs)), id: \.0) { index, item in
-                      
-                        Text("\(item)")
-                        
+                        }
                     }
-                    
+                    .frame(height: 200)
+                    .frame(width: viewModel.canvasSize, alignment: .leading)
+                    .offset(x: viewModel.offset)
+                    .background(Color.gray.opacity(0.1))
+                    .gesture(
+                        DragGesture(minimumDistance: 10, coordinateSpace: .global)
+                            .onChanged({ value in
+                                viewModel.onDrag(x: value.translation.width)
+                            })
+                            .updating($isDragging, body: { (value, state, trans) in
+                                state = true
+                            })
+                            .onEnded({ value in
+                                
+                                viewModel.afterDrag()
+                            })
+                    )
+                    .onAppear {
+                        viewModel.setup()
+                    }
                 }
                 
             }
@@ -160,7 +140,7 @@ struct Sho_Previews: PreviewProvider {
             
             Swiper(
                 [.blue, .gray, .orange, .green],
-                options: SwiperOptions(spacing: 10, slidesPerView: 1.5, loop: false)
+                options: SwiperOptions(spacing: 10, slidesPerView: 1.5, loop: true)
             )
             .padding(.horizontal)
             // .frame(height: 250)

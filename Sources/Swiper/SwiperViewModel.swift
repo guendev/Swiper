@@ -8,20 +8,19 @@
 import SwiftUI
 
 class SwiperViewModel: ObservableObject  {
-    
     @Published
     var data: [Color]
     
     @Published
-    var cloneNext: [Color] = []
+    var nextData: [Color] = []
     
     @Published
-    var clonePrev: [Color] = []
+    var prevData: [Color] = []
     
     var resource: [Color] {
         get {
             if options.loop {
-                return clonePrev + data + cloneNext
+                return prevData + data + nextData
             }
             return data
         }
@@ -97,6 +96,14 @@ class SwiperViewModel: ObservableObject  {
         self.options = options
     }
     
+    func setup() -> Void {
+        if options.loop {
+            prevData.append(contentsOf: data)
+            let newIndex = data.count + currentIndex
+            primaryOffet = -offsetForItem(newIndex)
+        }
+    }
+    
 }
 
 /// Size
@@ -121,30 +128,33 @@ extension SwiperViewModel {
     }
 }
 
-/// Drag
+// Navigation
 extension SwiperViewModel {
     func onDrag(x: CGFloat) -> Void {
         activeOffset = x
+        cloneNext()
+        clonePrev(step: 1)
     }
     
     func afterDrag() -> Void {
         primaryOffet += activeOffset
         activeOffset = .zero
         
-        // Kéo cuộn về phía leading
-        if offset > 0 {
-            toOffset(.zero)
-        } else if offset < -enableSize {
-            toOffset(-enableSize)
-        } else {
-            // Các trường hợp còn lại => cuộn về index gần nhất
+        if options.loop {
             toIndex(currentIndex)
+        } else {
+            // Kéo cuộn về phía leading
+            if offset > 0 {
+                toOffset(.zero)
+            } else if offset < -enableSize {
+                toOffset(-enableSize)
+            } else {
+                // Các trường hợp còn lại => cuộn về index gần nhất
+                toIndex(currentIndex)
+            }
         }
     }
-}
-
-// Navigation
-extension SwiperViewModel {
+    
     func toOffset(_ to: CGFloat) {
         withAnimation {
             primaryOffet = to
@@ -155,15 +165,19 @@ extension SwiperViewModel {
         toOffset(-offsetForItem(to))
     }
     
-    /// Tiến tới slide tiếp theo
-    func toNext() -> Void {
-        // Nếu Clone => cloneNext
+    func cloneNext() -> Void {
         if options.loop {
             if (currentIndex + 1) + data.count >= resource.count - 1 {
-                cloneNext.append(contentsOf: data)
+                nextData.append(contentsOf: data)
             }
             
         }
+    }
+    
+    /// Tiến tới slide tiếp theo
+    func toNext() -> Void {
+        // Nếu Clone => cloneNext
+        cloneNext()
         
         // Nằm trong khoảng có thể next
         if currentIndex < resource.count - 1 {
@@ -171,20 +185,24 @@ extension SwiperViewModel {
         }
     }
     
-    func toPrev() -> Void {
-        
+    func clonePrev(step: Int = 0) {
         // Clone => push to clonePrev
         if options.loop {
-            if currentIndex < data.count {
-                clonePrev.append(contentsOf: data)
+            if currentIndex == data.count - 1 {
+                prevData.append(contentsOf: data)
                 
                 // khi append => làm thay đổi currentIndex => toIndex sẽ bị sai
                 // Thay đổi offset mà ko dùng animation
                 let newIndex = data.count + currentIndex
-                primaryOffet = -offsetForItem(newIndex)
+                primaryOffet = -offsetForItem(newIndex + step)
             }
         }
+    }
+    
+    func toPrev() -> Void {
         
+        // Kiểm tra và clone Prev
+        clonePrev()
 
         if currentIndex > 0 {
             return toIndex(currentIndex - 1)
