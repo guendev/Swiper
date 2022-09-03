@@ -10,6 +10,9 @@ import SwiftUI
 // Darg
 extension SwiperViewModel {
     func onDrag(x: CGFloat) -> Void {
+        guard !resource.isEmpty else {
+            return
+        }
         
         activeOffset = x
         
@@ -23,6 +26,10 @@ extension SwiperViewModel {
     }
     
     func afterDrag() -> Void {
+        guard !resource.isEmpty else {
+            return
+        }
+        
         primaryOffet += activeOffset
         activeOffset = .zero
         
@@ -104,7 +111,7 @@ struct Sho3_Previews: PreviewProvider {
         VStack {
             
             Swiper(
-                [.yellow, .blue, .red, .green],
+                [],
                 options: SwiperOptions(
                     spaceBetween: 10,
                     slidesPerView: 1.5,
