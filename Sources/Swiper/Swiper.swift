@@ -84,7 +84,26 @@ struct Swiper: View {
                 /// Cards
                 ZStack(alignment: .topLeading) {
                     
-                    ForEach(Array(zip(viewModel.resource.indices, viewModel.resource)), id: \.0) { index, item in
+                    ForEach(Array(zip(viewModel.data.indices, viewModel.data)), id: \.0) { index, item in
+                      
+                        item
+                            .overlay(
+                                VStack {
+                                    
+                                    Text("Offset: \(viewModel.offsetForItem(index))")
+                                    
+                                    Text("Index: \(index)")
+                                    
+                                    Text(viewModel.currentIndex == index ? "Active" : "")
+                                    
+                                }
+                            )
+                            .frame(width: viewModel.widthPerElement())
+                            .offset(x: viewModel.offsetForItem(index))
+                        
+                    }
+                    
+                    ForEach(Array(zip(viewModel.cloneNext.indices, viewModel.cloneNext)), id: \.0) { index, item in
                       
                         item
                             .overlay(
@@ -157,7 +176,7 @@ struct Sho_Previews: PreviewProvider {
             
             Swiper(
                 [.blue, .gray, .orange, .green],
-                options: SwiperOptions(spacing: 10, slidesPerView: 1.5)
+                options: SwiperOptions(spacing: 10, slidesPerView: 1.5, loop: true)
             )
             .padding(.horizontal)
             // .frame(height: 250)

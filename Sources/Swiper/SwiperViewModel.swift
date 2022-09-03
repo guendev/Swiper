@@ -79,7 +79,7 @@ class SwiperViewModel: ObservableObject  {
             } else if offset < -viewSize {
                 return resource.count
             } else {
-                // Sai do chứa padding
+                /// Mỗi element sẽ đi kèm với một padding, ngoại trừ element đầu tiên
                 let ratio = abs((offset - options.spacing) / (widthPerElement() + options.spacing))
                 return Int(round(ratio))
             }
@@ -159,7 +159,7 @@ extension SwiperViewModel {
     func toNext() -> Void {
         // Nếu Clone => cloneNext
         if options.loop {
-            if (currentIndex + 1) + data.count > resource.count {
+            if (currentIndex + 1) + data.count >= resource.count - 1 {
                 cloneNext.append(contentsOf: data)
             }
             
@@ -173,15 +173,18 @@ extension SwiperViewModel {
     
     func toPrev() -> Void {
         
-        // Clone > reverse => push to clonePrev
-//        if options.loop {
-//            if currentIndex < resource.count {
-//                clonePrev.append(contentsOf: data.reversed())
-//            }
-//        }
-//
+        // Clone => push to clonePrev
+        if options.loop {
+            if currentIndex < resource.count {
+                clonePrev.append(contentsOf: data)
+            }
+        }
+        // khi append => làm thay đổi currentIndex => toIndex sẽ bị sai
+        // Thay đổi offset mà ko dùng animation
+        
+
         if currentIndex > 0 {
-            return toIndex(currentIndex - 2)
+            return toIndex(currentIndex - 1)
         }
     }
 }
@@ -219,7 +222,7 @@ struct Sho2_Previews: PreviewProvider {
         VStack {
             
             Swiper(
-                [.blue, .gray, .orange, .blue, .gray, .orange],
+                [.blue, .gray, .orange, .blue, .gray],
                 options: SwiperOptions(spacing: 10, slidesPerView: 1.5, loop: true)
             )
             .padding(.horizontal)
