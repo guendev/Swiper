@@ -54,15 +54,17 @@ struct Swiper: View {
                     Group {
                         Text("Active: \(isDragging ? "true" : "false")")
                         Text("Offset: \(viewModel.offset)")
+                        Text("Primary Offset: \(viewModel.primaryOffet)")
+                        Text("Darg: \(viewModel.activeOffset)")
                         Text("Canvas Size: \(viewModel.canvasSize)")
                         Text("Width Element: \(viewModel.widthPerElement())")
                         Text("Padding: \(viewModel.totalSpaces())")
                         Text("Init Count: \(viewModel.data.count)")
                         Text("Deep Count: \(viewModel.resource.count)")
                         Text("View Size: \(viewModel.viewSize)")
-                        Text("Enable Size: \(viewModel.enableSize)")
-                        Text("Current Index: \(viewModel.currentIndex)")
                     }
+                    Text("Enable Size: \(viewModel.enableSize)")
+                    Text("Current Index: \(viewModel.currentIndex)")
 
                     
                 }

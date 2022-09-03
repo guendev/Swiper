@@ -137,7 +137,13 @@ extension SwiperViewModel {
 // Navigation
 extension SwiperViewModel {
     func onDrag(x: CGFloat) -> Void {
-        activeOffset = x
+        
+        // if options.bounce {
+            activeOffset = x
+//        } else {
+//            //
+//        }
+        
         cloneNext()
         clonePrev(step: 1)
         
@@ -197,6 +203,8 @@ extension SwiperViewModel {
         // Nằm trong khoảng có thể next
         if currentIndex < resource.count - 1 {
             return toIndex(currentIndex + 1)
+        } else {
+            toIndex(0)
         }
     }
     
@@ -241,20 +249,17 @@ extension SwiperViewModel {
 }
 
 struct SwiperOptions {
-    internal init(spacing: CGFloat = .zero, slidesPerView: CGFloat = 1, autoPlay: Bool = false, loop: Bool = false, initIndex: Int = 0) {
-        self.spacing = spacing
-        self.slidesPerView = slidesPerView
-        self.autoPlay = autoPlay
-        self.loop = loop
-        self.initIndex = initIndex
-    }
-    
+    // Khoảng cách giữa các element
     var spacing: CGFloat = .zero
+    // Số slide/màn hình
     var slidesPerView: CGFloat = 1
     
+    // Tự động play
     var autoPlay: Bool = false
+    // Tự động clone. Infinity
     var loop: Bool = false
     
+    // Slide bắt đầu
     var initIndex: Int = 0
 }
 
@@ -264,7 +269,7 @@ struct Sho2_Previews: PreviewProvider {
             
             Swiper(
                 [.blue, .gray, .orange, .yellow],
-                options: SwiperOptions(spacing: 10, slidesPerView: 2, autoPlay: true, loop: true)
+                options: SwiperOptions(spacing: 10, slidesPerView: 2.5, autoPlay: false, loop: true)
             )
             .padding(.horizontal)
             // .frame(height: 250)
