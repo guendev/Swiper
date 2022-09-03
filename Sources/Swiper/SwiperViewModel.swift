@@ -175,12 +175,15 @@ extension SwiperViewModel {
         
         // Clone => push to clonePrev
         if options.loop {
-            if currentIndex < resource.count {
+            if currentIndex < data.count {
                 clonePrev.append(contentsOf: data)
+                
+                // khi append => làm thay đổi currentIndex => toIndex sẽ bị sai
+                // Thay đổi offset mà ko dùng animation
+                let newIndex = data.count + currentIndex
+                primaryOffet = -offsetForItem(newIndex)
             }
         }
-        // khi append => làm thay đổi currentIndex => toIndex sẽ bị sai
-        // Thay đổi offset mà ko dùng animation
         
 
         if currentIndex > 0 {
@@ -222,7 +225,7 @@ struct Sho2_Previews: PreviewProvider {
         VStack {
             
             Swiper(
-                [.blue, .gray, .orange, .blue, .gray],
+                [.blue, .gray, .orange, .yellow],
                 options: SwiperOptions(spacing: 10, slidesPerView: 1.5, loop: true)
             )
             .padding(.horizontal)
