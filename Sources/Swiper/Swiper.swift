@@ -14,7 +14,7 @@ struct Swiper<Data, Content> : View where Data : RandomAccessCollection, Content
     
     @ObservedObject
     var viewModel: SwiperViewModel<Data>
-    private let content: (SwiperElement, SwiperItemResource, Dragging) -> Content
+    private let content: (SwiperElement, SwiperItemResource) -> Content
     
     /// optional slot
     // private let action: (() -> Content)?
@@ -38,8 +38,7 @@ struct Swiper<Data, Content> : View where Data : RandomAccessCollection, Content
                                     index: index,
                                     active: index == viewModel.currentIndex,
                                     offset: viewModel.offsetForSlide(index)
-                                ),
-                                isDragging
+                                )
                             )
 
                         }
@@ -105,7 +104,7 @@ extension Swiper {
         _ data: Data,
         options: SwiperOptions = SwiperOptions(),
         // @ViewBuilder action: @escaping () -> Content = nil,
-        @ViewBuilder content: @escaping (SwiperElement, SwiperItemResource, Dragging) -> Content
+        @ViewBuilder content: @escaping (SwiperElement, SwiperItemResource) -> Content
     ) {
         self.viewModel = SwiperViewModel(data, options: options)
         self.content = content
@@ -118,7 +117,7 @@ extension Swiper {
     /// You can control slide outside Swiper() via ViewModel
     init(
         _ viewModel: SwiperViewModel<Data>,
-        @ViewBuilder content: @escaping (SwiperElement, SwiperItemResource, Dragging) -> Content
+        @ViewBuilder content: @escaping (SwiperElement, SwiperItemResource) -> Content
     ) {
         self.viewModel = viewModel
         self.content = content
@@ -133,7 +132,7 @@ struct SwiperCanvas: View {
     
     var body: some View {
         VStack {
-            Swiper(arr, options: options) { data, resource, _ in
+            Swiper(arr, options: options) { data, resource in
                 Color.init(hex: data)
                     .overlay(
                         
@@ -161,11 +160,26 @@ struct SwiperCanvas: View {
                     .font(.title)
                     .fontWeight(.semibold)
                 
+                HStack(alignment: .top) {
+                    
+                    Text("initialSlide")
+                    
+                    Picker(selection: $options.initialSlide, label: Text("Fruit")) {
+                        Text("0")
+                            .tag(0)
+                        Text("1")
+                            .tag(1)
+                        Text("2")
+                            .tag(2)
+                    }
+                    
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                
                 VStack(alignment: .leading) {
                     Text("slidesPerView: \(options.slidesPerView)")
                     Slider(value: $options.slidesPerView, in: 1...4)
                 }
-                .padding(.top, 30)
                 
                 VStack(alignment: .leading) {
                     Text("spaceBetween:  \(options.spaceBetween)")
@@ -186,21 +200,26 @@ struct SwiperCanvas: View {
                     .padding(.vertical, 10)
 
                 
-                VStack(alignment: .leading) {
-                    Toggle(isOn: $options.loop) {
-                        Text("Toggle : Loop")
+                HStack {
+                    VStack(alignment: .leading) {
+                        Toggle(isOn: $options.loop) {
+                            Text("Loop")
+                        }
                     }
+                    
+                    VStack(alignment: .leading) {
+                        Toggle(isOn: $options.autoPlay) {
+                            Text("AutoPlay")
+                        }
+                    }
+                    .padding(.leading)
                 }
                 
-                VStack(alignment: .leading) {
-                    Toggle(isOn: $options.autoPlay) {
-                        Text("Toggle : AutoPlay")
+                if options.autoPlay {
+                    VStack(alignment: .leading) {
+                        Text("speed:  \(options.speed)")
+                        Slider(value: $options.speed, in: 1...10)
                     }
-                }
-                
-                VStack(alignment: .leading) {
-                    Text("speed:  \(options.speed)")
-                    Slider(value: $options.speed, in: 1...10)
                 }
                 
             }
