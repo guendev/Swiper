@@ -143,6 +143,8 @@ class SwiperViewModel<Data>: ObservableObject where Data: RandomAccessCollection
         if options.autoPlay {
             enableAutoPlay()
         }
+        
+        toSlide(options.initialSlide)
     }
     
 }

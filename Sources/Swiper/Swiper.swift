@@ -29,9 +29,9 @@ struct Swiper<Data, Content> : View where Data : RandomAccessCollection, Content
                 ZStack {
                     // Primary
                     ForEach(Array(zip(viewModel.resource.indices, viewModel.resource)), id: \.0) { index, item in
-                        
+
                         VStack {
-                            
+
                             content(
                                 item.item,
                                 SwiperItemResource(
@@ -41,16 +41,15 @@ struct Swiper<Data, Content> : View where Data : RandomAccessCollection, Content
                                 ),
                                 isDragging
                             )
-                            
+
                         }
-                        .frame(width: viewModel.widthPerSlide())
+                        .frame(width: viewModel.slideWidth)
                         .offset(x: viewModel.offsetForSlide(index))
-                        
+
                     }
                 }
                 .frame(width: viewModel.canvasSize, alignment: viewModel.options.alignment)
                 .offset(x: viewModel.offset)
-                .background(Color.gray.opacity(0.1))
                 .gesture(
                     DragGesture(minimumDistance: 10, coordinateSpace: .global)
                         .onChanged({ value in
@@ -71,7 +70,8 @@ struct Swiper<Data, Content> : View where Data : RandomAccessCollection, Content
             }
             
         }
-        .frame(idealWidth: .infinity, maxWidth: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.gray.opacity(0.1))
         .overlay(
             
             GeometryReader { proxy -> AnyView in
@@ -129,7 +129,7 @@ struct SwiperCanvas: View {
     
     @State var arr: [String] = ["#A460ED", "#0F3460", "#42855B"]
     
-    @State var options: SwiperOptions = SwiperOptions(slidesPerView: 1.5)
+    @State var options: SwiperOptions = SwiperOptions(initialSlide: 1, slidesPerView: 1.5)
     
     var body: some View {
         VStack {
