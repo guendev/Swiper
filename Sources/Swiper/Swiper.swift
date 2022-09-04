@@ -71,16 +71,26 @@ struct Swiper<Data, Content> : View where Data : RandomAccessCollection, Content
             }
             
         }
-        .frame(maxWidth: .infinity)
+        .frame(idealWidth: .infinity, maxWidth: .infinity)
         .overlay(
             
-            GeometryReader { proxy -> Color in
+            GeometryReader { proxy -> AnyView in
                 
                 let _width = proxy.size.width
-                DispatchQueue.main.async {
-                    viewModel.canvasSize = _width
+                if _width != viewModel.canvasSize {
+                    DispatchQueue.main.async {
+                        withAnimation {
+                            viewModel.canvasSize = _width
+                        }
+                    }
                 }
-                return Color.clear
+                return AnyView(
+                    Color.clear
+                        .onAppear {
+                            viewModel.canvasSize = proxy.size.width
+                        }
+                )
+                
             }
             
         )
@@ -119,7 +129,7 @@ struct SwiperCanvas: View {
     
     @State var arr: [String] = ["#A460ED", "#0F3460", "#42855B"]
     
-    @State var options: SwiperOptions = SwiperOptions()
+    @State var options: SwiperOptions = SwiperOptions(slidesPerView: 1.5)
     
     var body: some View {
         VStack {
@@ -152,16 +162,46 @@ struct SwiperCanvas: View {
                     .fontWeight(.semibold)
                 
                 VStack(alignment: .leading) {
-                    Text("slidesPerView")
+                    Text("slidesPerView: \(options.slidesPerView)")
                     Slider(value: $options.slidesPerView, in: 1...4)
                 }
                 .padding(.top, 30)
                 
                 VStack(alignment: .leading) {
-                    Text("spaceBetween")
-                    Slider(value: $options.spaceBetween, in: 0...100)
+                    Text("spaceBetween:  \(options.spaceBetween)")
+                    Slider(value: $options.spaceBetween, in: 0...30)
                 }
                 .padding(.top, 30)
+                
+                Divider()
+                    .padding(.vertical, 10)
+                
+                VStack(alignment: .leading) {
+                    Toggle(isOn: $options.fitSize) {
+                        Text("Toggle : fitSize")
+                    }
+                }
+                
+                Divider()
+                    .padding(.vertical, 10)
+
+                
+                VStack(alignment: .leading) {
+                    Toggle(isOn: $options.loop) {
+                        Text("Toggle : Loop")
+                    }
+                }
+                
+                VStack(alignment: .leading) {
+                    Toggle(isOn: $options.autoPlay) {
+                        Text("Toggle : AutoPlay")
+                    }
+                }
+                
+                VStack(alignment: .leading) {
+                    Text("speed:  \(options.speed)")
+                    Slider(value: $options.speed, in: 1...10)
+                }
                 
             }
             .padding(.top, 30)

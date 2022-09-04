@@ -43,7 +43,7 @@ class SwiperViewModel<Data>: ObservableObject where Data: RandomAccessCollection
                 return .zero
             }
             
-            return totalWidthElement() + totalSpacing()
+            return slidesWidth + slidesSpacing
         }
     }
     
@@ -51,7 +51,7 @@ class SwiperViewModel<Data>: ObservableObject where Data: RandomAccessCollection
     /// Bằng tổng viewSize - 1 canvasSize
     var enableSize: CGFloat {
         get {
-            return viewSize - widthPerSlide()
+            return viewSize - slideWidth
         }
     }
     
@@ -63,9 +63,36 @@ class SwiperViewModel<Data>: ObservableObject where Data: RandomAccessCollection
     @Published
     var activeOffset: CGFloat = .zero
     
+    // Offset thực tế
     var offset: CGFloat {
         get {
             return primaryOffet + activeOffset
+        }
+    }
+    
+    /// Size
+    var slideWidth: CGFloat {
+        get {
+            
+            if canvasSize == .zero {
+                return .zero
+            }
+            
+            let _width = canvasSize / options.slidesPerView
+            let _spaces = (options.slidesPerView - 1) * options.spaceBetween
+            return _width - _spaces / options.slidesPerView
+        }
+    }
+    
+    var slidesWidth: CGFloat {
+        get {
+            return CGFloat(resource.count) * slideWidth
+        }
+    }
+    
+    var slidesSpacing: CGFloat {
+        get {
+            return CGFloat(resource.count - 1) * options.spaceBetween
         }
     }
     
@@ -74,7 +101,7 @@ class SwiperViewModel<Data>: ObservableObject where Data: RandomAccessCollection
     var currentIndex: Int {
         get {
             
-            if widthPerSlide() == .zero {
+            if slideWidth == .zero {
                 return 0
             }
             
@@ -84,7 +111,7 @@ class SwiperViewModel<Data>: ObservableObject where Data: RandomAccessCollection
                 return resource.count
             } else {
                 /// Mỗi element sẽ đi kèm với một padding, ngoại trừ element đầu tiên
-                let ratio = abs((offset - options.spaceBetween) / (widthPerSlide() + options.spaceBetween))
+                let ratio = abs((offset - options.spaceBetween) / (slideWidth + options.spaceBetween))
                 return Int(round(ratio))
             }
         }

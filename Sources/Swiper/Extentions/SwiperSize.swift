@@ -27,16 +27,6 @@ extension SwiperViewModel {
         return _width - _spaces / options.slidesPerView
     }
     
-    // Tổng độ rộng của tất cả slide
-    func totalWidthElement() -> CGFloat {
-        return CGFloat(resource.count) * widthPerSlide()
-    }
-    
-    // Tổng khoảng cách
-    func totalSpacing() -> CGFloat {
-        return CGFloat(resource.count - 1) * options.spaceBetween
-    }
-    
     // Offset cho ZStack
     func offsetForSlide(_ index: Int) -> CGFloat {
         let _index = CGFloat(index)
